@@ -1,0 +1,40 @@
+cargo-features = ["codegen-backend"]
+
+[package]
+name = "space_game"
+version = "0.1.0"
+edition = "2021"
+
+
+[dependencies]
+log = { version = "*", features = ["max_level_debug", "release_max_level_warn"] }
+
+bevy = { version = "0.14.0", features = ["dynamic_linking"] }
+bevy_embedded_assets = "0.11.0"
+bevy_rand = { version = "0.7.1", features = ["rand_chacha", "wyrand"] }
+rand = "0.8.5"
+clap = { version = "4.5.16", features = ["derive"] }
+
+
+
+[profile.dev]
+codegen-backend = "cranelift"
+
+
+
+# compile optimizations taken from:
+# https://bevy-cheatbook.github.io/pitfalls/performance.html
+
+# Enable max optimizations for dependencies, but not for our code:
+[profile.dev.package."*"]
+codegen-backend = "llvm"
+opt-level = 3
+
+# maximized release optimizations
+[profile.release]
+lto = true
+opt-level = 3
+codegen-units = 1
+incremental = false
+debug = false
+
